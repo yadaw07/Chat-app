@@ -1,39 +1,14 @@
-import { useState } from 'react';
 import { useChat } from '../hooks/useChat';
+import ChatWindow from '../components/chat/ChatWindow';
 
-const ChatPage = () => {
-  const [input, setInput] = useState('');
-
+function ChatPage() {
   const { messages, sendMessage } = useChat();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    sendMessage(input);
-    setInput('');
-  };
-
   return (
-    <div>
-      <ul>
-        {messages.map((msg) => (
-          <li key={msg.id}>
-            <strong>{msg.senderId.slice(0, 5)}:</strong> {msg.text}
-          </li>
-        ))}
-      </ul>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type='text'
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder='Type a message...'
-        />
-        <button type='submit'>Send</button>
-      </form>
+    <div className='chat-page'>
+      <ChatWindow messages={messages} onSend={sendMessage} />
     </div>
   );
-};
+}
 
 export default ChatPage;
