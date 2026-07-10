@@ -1,12 +1,20 @@
 export function registerChatHandlers(io, socket) {
-  socket.on('message:send', (payload) => {
+  socket.on('message:send', ({ roomId, text }) => {
+    if (!roomId || !socket.rooms.has(roomId)) {
+      socket.emit('error', {
+        message: `You must join a room before sending messages`,
+      });
+      return;
+    }
+
     const message = {
       id: crypto.randomUUID(),
-      text: payload.text,
+      text,
+      roomId,
       senderId: socket.id,
-      timestamp: Date.now(),
+      timestamps: Date.now(),
     };
 
-    io.emit('message:new', message);
+    io.to(roomId).emit('message:new', message);
   });
 }
