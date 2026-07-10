@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useSocket } from '../context/SocketContext';
+import { useChatStore, EMPTY_MESSAGES } from '../store/chatStore';
 
 export function useChat() {
   const { socket } = useSocket();
-  const [messages, setMessages] = useState([]);
+
+  const addMessage = useChatStore((state) => state.addMessage);
+  const activeRoomId = useChatStore((state) => state.activeRoomId);
+  const messages = useChatStore(
+    (state) => state.messagesByRoom[activeRoomId] ?? EMPTY_MESSAGES,
+  );
 
   useEffect(() => {
     const handleNewMessage = (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      addMessage(message);
     };
 
     socket.on('message:new', handleNewMessage);
@@ -15,10 +21,11 @@ export function useChat() {
     return () => {
       socket.off('message:new', handleNewMessage);
     };
-  }, [socket]);
+  }, [socket, addMessage]);
 
   const sendMessage = (text) => {
-    socket.emit('message:send', { text });
+    if (!text.trim() || !activeRoomId) return;
+    socket.emit('message:send', { roomId: activeRoomId, text });
   };
 
   return { messages, sendMessage };

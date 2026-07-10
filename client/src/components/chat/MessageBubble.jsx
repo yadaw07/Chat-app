@@ -1,5 +1,5 @@
 const MessageBubble = ({ message, isOwnMessage }) => {
-  const time = new Date(message.timestamp).toLocaleTimeString([], {
+  const time = new Date(message.timestamps).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
