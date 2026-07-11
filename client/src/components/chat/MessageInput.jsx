@@ -1,7 +1,14 @@
 import { useState } from 'react';
 
-const MessageInput = ({ onSend }) => {
+const MessageInput = ({ onSend, onTyping, onStopTyping }) => {
   const [text, setText] = useState('');
+
+  const handleChange = (e) => {
+    e.preventDefault();
+
+    setText(e.target.value);
+    onTyping();
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -9,6 +16,7 @@ const MessageInput = ({ onSend }) => {
     if (!trimmed) return;
 
     onSend(trimmed);
+    onStopTyping();
     setText('');
   };
 
@@ -19,7 +27,7 @@ const MessageInput = ({ onSend }) => {
     >
       <input
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
         placeholder='Type a message...'
         autoComplete='off'
         className='flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500'

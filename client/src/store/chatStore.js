@@ -9,6 +9,7 @@ export const useChatStore = create((set) => ({
   messagesByRoom: {}, // { [roomId]: Message[] }
   onlineUsers: [],
   membersByRoom: {},
+  typingByRoom: {}, // { [roomId]: Set-like array of userIds currently typing }
 
   setRooms: (rooms) => set({ rooms }),
   setActiveRoom: (roomId) => set({ activeRoomId: roomId }),
@@ -63,6 +64,20 @@ export const useChatStore = create((set) => ({
         ),
       },
     })),
+
+  setTyping: (roomId, userId, isTyping) =>
+    set((state) => {
+      const current = state.typingByRoom[roomId] || [];
+      const next = isTyping
+        ? current.includes(userId)
+          ? current
+          : [...current, userId]
+        : current.filter((id) => id !== userId);
+
+      return {
+        typingByRoom: { ...state.typingByRoom, [roomId]: next },
+      };
+    }),
 }));
 
 export { EMPTY_MESSAGES, EMPTY_MEMBERS };
