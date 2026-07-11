@@ -5,14 +5,18 @@ import { useChatStore } from '../store/chatStore';
 
 export function useRooms() {
   const { socket } = useSocket();
+
   const rooms = useChatStore((state) => state.rooms);
   const activeRoomId = useChatStore((state) => state.activeRoomId);
   const setRooms = useChatStore((state) => state.setRooms);
   const setActiveRoom = useChatStore((state) => state.setActiveRoom);
 
+  const setRoomMembers = useChatStore((state) => state.setRoomMembers);
+  const addRoomMember = useChatStore((state) => state.addRoomMember);
+  const removeRoomMember = useChatStore((state) => state.removeRoomMember);
+
   useEffect(() => {
     const handleRoomList = (rooms) => {
-      console.log('received rooms from server:', rooms);
       setRooms(rooms);
     };
 
@@ -20,8 +24,17 @@ export function useRooms() {
       socket.emit('room:list');
     };
 
+    const handleMembers = ({ roomId, members }) =>
+      setRoomMembers(roomId, members);
+    const handleUserJoined = ({ roomId, userId }) =>
+      addRoomMember(roomId, userId);
+    const handleUserLeft = ({ roomId, userId }) =>
+      removeRoomMember(roomId, userId);
+
     socket.on('room:list', handleRoomList);
-    console.log('requesting room list, socket connected?', socket.connected);
+    socket.on('room:members', handleMembers);
+    socket.on('room:userJoined', handleUserJoined);
+    socket.on('room:userLeft', handleUserLeft);
 
     socket.on('connect', requestRooms);
 
@@ -31,9 +44,12 @@ export function useRooms() {
 
     return () => {
       socket.off('room:list', handleRoomList);
+      socket.off('room:members', handleMembers);
+      socket.off('room:userJoined', handleUserJoined);
+      socket.off('room:userLeft', handleUserLeft);
       socket.off('connect', requestRooms);
     };
-  }, [socket, setRooms]);
+  }, [socket, setRooms, setRoomMembers, addRoomMember, removeRoomMember]);
 
   const joinRoom = (roomId) => {
     if (activeRoomId) {

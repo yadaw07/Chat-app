@@ -1,5 +1,6 @@
 import { registerChatHandlers } from './chatHandlers.js';
 import { registerRoomHandlers } from './roomHandlers.js';
+import { registerPresenceHandlers } from './presenceHandlers.js';
 
 export function registerSocketHandlers(io) {
   io.on('connection', (socket) => {
@@ -7,6 +8,7 @@ export function registerSocketHandlers(io) {
 
     registerChatHandlers(io, socket);
     registerRoomHandlers(io, socket);
+    registerPresenceHandlers(io, socket);
 
     socket.on('disconnect', () => {
       console.log(`Socket disconnected: ${socket.id}`);
