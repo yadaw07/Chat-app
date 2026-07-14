@@ -1,9 +1,17 @@
 import { roomExists, getAllRooms } from '../services/roomService.js';
 
+import { isValidRoomId } from '../utils/validators.js';
+import { emitError } from '../utils/socketError.js';
+
 export function registerRoomHandlers(io, socket) {
   socket.on('room:join', ({ roomId }) => {
+    if (!isValidRoomId(roomId)) {
+      emitError(socket, 'INVALID_ROOM_ID', 'Room ID is missing or malformed');
+      return;
+    }
+
     if (!roomExists(roomId)) {
-      socket.emit('error', { message: `Room ${roomId} does not exist` });
+      emitError(socket, 'ROOM_NOT_FOUND', `Room "${roomId}" does not exist`);
       return;
     }
 
@@ -18,6 +26,8 @@ export function registerRoomHandlers(io, socket) {
   });
 
   socket.on('room:leave', ({ roomId }) => {
+    if (!isValidRoomId(roomId)) return;
+
     socket.leave(roomId);
     socket.to(roomId).emit('room:userLeft', { roomId, userId: socket.id });
 

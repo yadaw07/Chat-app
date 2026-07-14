@@ -9,6 +9,10 @@ import ChatWindow from '../components/chat/ChatWindow';
 import Sidebar from '../components/layout/Sidebar';
 import UserList from '../components/users/UserList';
 
+import { useSocketErrors } from '../hooks/useSocketErrors';
+import ErrorToast from '../components/layout/ErrorToast';
+import { useSocket } from '../context/SocketContext';
+
 const EMPTY_TYPING = [];
 
 function ChatPage() {
@@ -17,6 +21,8 @@ function ChatPage() {
   const { notifyTyping, stopTyping } = useTyping(activeRoomId);
 
   usePresence();
+
+  const { error, clearError } = useSocketErrors();
 
   const members = useChatStore(
     (state) => state.membersByRoom[activeRoomId] ?? EMPTY_MEMBERS,
@@ -55,6 +61,8 @@ function ChatPage() {
           Select a room to start chatting
         </div>
       )}
+
+      <ErrorToast error={error} onClear={clearError} />
     </div>
   );
 }
