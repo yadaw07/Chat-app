@@ -22,7 +22,7 @@ router.post('/register', async (req, res) => {
     if (err.message === 'USERNAME_TAKEN') {
       return res.status(409).json({ error: 'Username already taken' });
     }
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error:  err.message });
   }
 });
 

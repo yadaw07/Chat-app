@@ -1,35 +1,36 @@
 import bcrypt from 'bcrypt';
-
-const users = new Map();
+import { User } from '../models/User.js';
 
 export async function createUser(username, password) {
-  if (users.has(username)) {
+  const exsiting = await User.findOne({ username });
+
+  if (exsiting) {
     throw new Error('USERNAME_TAKEN');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = { id: crypto.randomUUID(), username, hashedPassword };
-  users.set(username, user);
+  const user = await User.create({ username, passwordHash: hashedPassword });
 
-  return { id: user.id, username: user.username };
+  return { id: user._id.toString(), username: user.username };
 }
 
 export async function verifyCredentials(username, password) {
-  const user = users.get(username);
+  const user = await User.findOne({ username });
+
   if (!user) return null;
 
-  const isValid = await bcrypt.compare(password, user.hashedPassword);
+  const isValid = await bcrypt.compare(password, user.passwordHash);
 
-  return isValid ? { id: user.id, username: user.username } : null;
+  return isValid ? { id: user._id.toString(), username: user.username } : null;
 }
 
-export function getUserById(id) {
-  for (const user of users.values()) {
-    if (user.id === id) {
-      return { id: user.id, username: user.username };
-    }
+export async function getUserById(id) {
+  const user = await User.findById(id).catch(() => null);
+
+  if (!user) {
+    return null;
   }
 
-  return null;
+  return { id: user._id.toString(), username: user.username };
 }

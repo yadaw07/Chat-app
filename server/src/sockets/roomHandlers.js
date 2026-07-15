@@ -3,16 +3,16 @@ import { roomExists, getAllRooms } from '../services/roomService.js';
 import { isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
-export function registerRoomHandlers(io, socket) {
+export async function registerRoomHandlers(io, socket) {
   const user = socket.data.user;
 
-  socket.on('room:join', ({ roomId }) => {
+  socket.on('room:join', async ({ roomId }) => {
     if (!isValidRoomId(roomId)) {
       emitError(socket, 'INVALID_ROOM_ID', 'Room ID is missing or malformed');
       return;
     }
 
-    if (!roomExists(roomId)) {
+    if (!(await roomExists(roomId))) {
       emitError(socket, 'ROOM_NOT_FOUND', `Room "${roomId}" does not exist`);
       return;
     }
@@ -38,8 +38,9 @@ export function registerRoomHandlers(io, socket) {
     }
   });
 
-  socket.on('room:list', () => {
-    socket.emit('room:list', getAllRoomsWithMemberCount(io));
+  socket.on('room:list', async () => {
+    const rooms = await getAllRoomsWithMemberCount(io);
+    socket.emit('room:list', rooms);
   });
 }
 
@@ -48,8 +49,10 @@ function getRoomMembers(io, roomId) {
   return room ? Array.from(room) : [];
 }
 
-function getAllRoomsWithMemberCount(io) {
-  return getAllRooms().map((room) => ({
+async function getAllRoomsWithMemberCount(io) {
+  const rooms = await getAllRooms();
+
+  return rooms.map((room) => ({
     ...room,
     memberCount: io.sockets.adapter.rooms.get(room.id)?.size || 0,
   }));

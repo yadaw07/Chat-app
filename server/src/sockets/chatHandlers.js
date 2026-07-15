@@ -2,7 +2,9 @@ import { isNonEmptyString, isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
 export function registerChatHandlers(io, socket) {
-  socket.on('message:send', ({ roomId, text }) => {
+  socket.on('message:send', async ({ roomId, text }) => {
+    console.log('socket rooms', socket.rooms);
+
     if (!isValidRoomId(roomId) || !socket.rooms.has(roomId)) {
       emitError(
         socket,

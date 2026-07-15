@@ -7,18 +7,27 @@ import { CLIENT_URL, PORT } from './src/config/env.js';
 import { socketAuthMiddleware } from './src/middleware/socketAuth.js';
 import app from './src/app.js';
 
-const httpServer = http.createServer(app);
+import { connectDB } from './src/config/db.js';
+import { seedDefaultRooms } from './src/services/roomService.js';
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: CLIENT_URL,
-    methods: ['GET', 'POST'],
-  },
-});
+async function startServer() {
+  await connectDB();
+  await seedDefaultRooms();
 
-io.use(socketAuthMiddleware);
-registerSocketHandlers(io);
+  const httpServer = http.createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: CLIENT_URL,
+      methods: ['GET', 'POST'],
+    },
+  });
 
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  io.use(socketAuthMiddleware);
+  registerSocketHandlers(io);
+
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+startServer();

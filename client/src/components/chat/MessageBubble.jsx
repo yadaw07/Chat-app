@@ -4,6 +4,8 @@ const MessageBubble = ({ message, isOwnMessage }) => {
     minute: '2-digit',
   });
 
+  // console.log('msgId', message);
+
   return (
     <div
       className={`max-w-[70%] flex flex-col px-3 py-2 rounded-xl ${
@@ -14,7 +16,8 @@ const MessageBubble = ({ message, isOwnMessage }) => {
     >
       {!isOwnMessage && (
         <span className='text-xs font-semibold opacity-70'>
-          {message.senderId.slice(0, 5)}
+          {/* {message.senderId.slice(0, 5)} */}
+          {message.id.slice(0, 5)}
         </span>
       )}
       <p className='text-sm'>{message.text}</p>
