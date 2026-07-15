@@ -4,6 +4,7 @@ import { usePresence } from '../hooks/usePresence';
 import { useTyping } from '../hooks/useTyping';
 
 import { EMPTY_MEMBERS, useChatStore } from '../store/chatStore';
+import { useAuthStore } from '../store/authStore';
 
 import ChatWindow from '../components/chat/ChatWindow';
 import Sidebar from '../components/layout/Sidebar';
@@ -21,6 +22,8 @@ function ChatPage() {
   const { notifyTyping, stopTyping } = useTyping(activeRoomId);
 
   usePresence();
+
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
   const { error, clearError } = useSocketErrors();
 
@@ -61,6 +64,7 @@ function ChatPage() {
           Select a room to start chatting
         </div>
       )}
+      <button onClick={clearAuth}>Log out</button>
 
       <ErrorToast error={error} onClear={clearError} />
     </div>

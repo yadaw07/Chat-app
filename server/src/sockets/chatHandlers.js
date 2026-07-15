@@ -21,7 +21,8 @@ export function registerChatHandlers(io, socket) {
       id: crypto.randomUUID(),
       text: text.trim(),
       roomId,
-      senderId: socket.id,
+      senderId: socket.data.user.id,
+      senderName: socket.data.user.username,
       timestamps: Date.now(),
     };
 

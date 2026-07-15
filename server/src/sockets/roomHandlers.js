@@ -4,6 +4,8 @@ import { isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
 export function registerRoomHandlers(io, socket) {
+  const user = socket.data.user;
+
   socket.on('room:join', ({ roomId }) => {
     if (!isValidRoomId(roomId)) {
       emitError(socket, 'INVALID_ROOM_ID', 'Room ID is missing or malformed');
@@ -18,7 +20,7 @@ export function registerRoomHandlers(io, socket) {
     socket.join(roomId);
     socket.data.currentRoom = roomId;
 
-    socket.to(roomId).emit('room:userJoined', { roomId, userId: socket.id });
+    socket.to(roomId).emit('room:userJoined', { roomId, userId: user.id });
 
     // send the new joiner the current members of the room
     const members = getRoomMembers(io, roomId);
@@ -29,7 +31,7 @@ export function registerRoomHandlers(io, socket) {
     if (!isValidRoomId(roomId)) return;
 
     socket.leave(roomId);
-    socket.to(roomId).emit('room:userLeft', { roomId, userId: socket.id });
+    socket.to(roomId).emit('room:userLeft', { roomId, userId: user.id });
 
     if (socket.data.currentRoom === roomId) {
       socket.data.currentRoom = null;

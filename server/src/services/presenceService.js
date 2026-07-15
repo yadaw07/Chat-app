@@ -1,12 +1,12 @@
-const onlineUsers = new Map(); // socketId -> { id, joinedAt }
+const onlineUsers = new Map(); // socketId -> { id, username, joinedAt }
 
-export function addUser(socketId) {
-  onlineUsers.set(socketId, { id: socketId, joinedAt: Date.now() });
-  return onlineUsers.get(socketId);
+export function addUser(userId, username) {
+  onlineUsers.set(userId, { id: userId, username, joinedAt: Date.now() });
+  return onlineUsers.get(userId);
 }
 
-export function removeUser(socketId) {
-  onlineUsers.delete(socketId);
+export function removeUser(userId) {
+  onlineUsers.delete(userId);
 }
 
 export function getOnlineUsers() {

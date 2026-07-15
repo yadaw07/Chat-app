@@ -5,11 +5,14 @@ import {
 } from '../services/presenceService.js';
 
 export function registerPresenceHandlers(io, socket) {
-  addUser(socket.id);
+  const user = socket.data.user;
+
+  addUser(user.id, user.username);
 
   // tell everyone else this user came online
   socket.broadcast.emit('presence:update', {
-    userId: socket.id,
+    userId: user.id,
+    username: user.username,
     status: 'online',
   });
 
@@ -17,9 +20,9 @@ export function registerPresenceHandlers(io, socket) {
   socket.emit('presence:list', getOnlineUsers());
 
   socket.on('disconnect', () => {
-    removeUser(socket.id);
+    removeUser(user.id);
     socket.broadcast.emit('presence:update', {
-      userId: socket.id,
+      userId: user.id,
       status: 'offline',
     });
   });
