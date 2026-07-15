@@ -43,6 +43,11 @@ export const useChatStore = create((set) => ({
       membersByRoom: { ...state.membersByRoom, [roomId]: members },
     })),
 
+  setRoomHistory: (roomId, messages) =>
+    set((state) => ({
+      messagesByRoom: { ...state.messagesByRoom, [roomId]: messages },
+    })),
+
   addRoomMember: (roomId, userId) =>
     set((state) => {
       const existing = state.membersByRoom[roomId] || [];

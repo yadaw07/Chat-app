@@ -1,4 +1,5 @@
 import { roomExists, getAllRooms } from '../services/roomService.js';
+import { getRecentMessages } from '../services/messageService.js';
 
 import { isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
@@ -25,6 +26,9 @@ export async function registerRoomHandlers(io, socket) {
     // send the new joiner the current members of the room
     const members = getRoomMembers(io, roomId);
     socket.emit('room:members', { roomId, members });
+
+    const messages = await getRecentMessages(roomId);
+    socket.emit('message:history', { roomId, messages });
   });
 
   socket.on('room:leave', ({ roomId }) => {
@@ -45,8 +49,9 @@ export async function registerRoomHandlers(io, socket) {
 }
 
 function getRoomMembers(io, roomId) {
-  const room = io.sockets.adapter.rooms.get(roomId);
-  return room ? Array.from(room) : [];
+  const usersId = io.sockets.adapter.rooms.get(roomId);
+
+  return usersId ? Array.from(usersId) : [];
 }
 
 async function getAllRoomsWithMemberCount(io) {

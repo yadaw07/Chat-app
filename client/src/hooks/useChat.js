@@ -5,8 +5,10 @@ import { useChatStore, EMPTY_MESSAGES } from '../store/chatStore';
 export function useChat() {
   const { socket } = useSocket();
 
-  const addMessage = useChatStore((state) => state.addMessage);
   const activeRoomId = useChatStore((state) => state.activeRoomId);
+  const setRoomHistory = useChatStore((state) => state.setRoomHistory);
+
+  const addMessage = useChatStore((state) => state.addMessage);
   const messages = useChatStore(
     (state) => state.messagesByRoom[activeRoomId] ?? EMPTY_MESSAGES,
   );
@@ -15,13 +17,17 @@ export function useChat() {
     const handleNewMessage = (message) => {
       addMessage(message);
     };
+    const handleHistory = ({ roomId, messages }) =>
+      setRoomHistory(roomId, messages);
 
     socket.on('message:new', handleNewMessage);
+    socket.on('message:history', handleHistory);
 
     return () => {
       socket.off('message:new', handleNewMessage);
+      socket.off('message:history', handleHistory);
     };
-  }, [socket, addMessage]);
+  }, [socket, addMessage, setRoomHistory]);
 
   const sendMessage = (text) => {
     if (!text.trim() || !activeRoomId) return;

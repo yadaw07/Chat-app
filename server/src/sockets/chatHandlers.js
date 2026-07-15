@@ -1,10 +1,10 @@
 import { isNonEmptyString, isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
+import { saveMessage } from '../services/messageService.js';
+
 export function registerChatHandlers(io, socket) {
   socket.on('message:send', async ({ roomId, text }) => {
-    console.log('socket rooms', socket.rooms);
-
     if (!isValidRoomId(roomId) || !socket.rooms.has(roomId)) {
       emitError(
         socket,
@@ -19,15 +19,22 @@ export function registerChatHandlers(io, socket) {
       return;
     }
 
-    const message = {
-      id: crypto.randomUUID(),
-      text: text.trim(),
-      roomId,
-      senderId: socket.data.user.id,
-      senderName: socket.data.user.username,
-      timestamps: Date.now(),
-    };
+    try {
+      const message = await saveMessage({
+        roomId,
+        text: text.trim(),
+        senderId: socket.data.user.id,
+        senderName: socket.data.user.username,
+      });
 
-    io.to(roomId).emit('message:new', message);
+      io.to(roomId).emit('message:new', message);
+    } catch (err) {
+      console.error('Failed to save message:', err.message);
+      emitError(
+        socket,
+        'SEND_FAILED',
+        'Could not send message, please try again',
+      );
+    }
   });
 }
