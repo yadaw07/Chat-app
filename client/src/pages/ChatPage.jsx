@@ -17,7 +17,7 @@ import { useSocket } from '../context/SocketContext';
 const EMPTY_TYPING = [];
 
 function ChatPage() {
-  const { messages, sendMessage } = useChat();
+  const { messages, sendMessage, editMessage, deleteMessage } = useChat();
   const { rooms, activeRoomId, joinRoom } = useRooms();
   const { notifyTyping, stopTyping } = useTyping(activeRoomId);
 
@@ -51,12 +51,14 @@ function ChatPage() {
             typingUserIds={typingUserIds}
             onTyping={notifyTyping}
             onStopTyping={stopTyping}
+            onEdit={editMessage}
+            onDelete={deleteMessage}
           />
           <aside className='w-48 border-l border-gray-200 h-screen'>
             <h2 className='px-3 pt-4 pb-2 text-xs font-semibold uppercase text-gray-400'>
               Members of this room
             </h2>
-            <UserList userIds={members} />
+            <UserList users={members} />
           </aside>
         </>
       ) : (

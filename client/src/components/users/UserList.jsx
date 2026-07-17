@@ -1,16 +1,16 @@
 import UserAvatar from '../users/UserAvatar';
 
-const UserList = ({ userIds }) => {
-  if (userIds.length === 0) {
+const UserList = ({ users }) => {
+  if (users.length === 0) {
     return <p className='px-3 py-2 text-xs text-gray-400'>No one here yet</p>;
   }
 
   return (
     <ul className='flex flex-col gap-2 p-3'>
-      {userIds.map((userId) => (
-        <li key={userId} className='flex items-center gap-2'>
-          <UserAvatar userId={userId} />
-          <span className='text-sm text-gray-700'>{userId.slice(0, 8)}</span>
+      {users.map((user) => (
+        <li key={user.id} className='flex items-center gap-2'>
+          <UserAvatar user={user.username} />
+          <span className='text-sm text-gray-700'>{user.username}</span>
         </li>
       ))}
     </ul>

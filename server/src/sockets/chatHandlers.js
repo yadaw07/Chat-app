@@ -37,4 +37,41 @@ export function registerChatHandlers(io, socket) {
       );
     }
   });
+
+  socket.on('message:edit', async ({ messageId, text }) => {
+    if (!isNonEmptyString(text)) {
+      emitError(socket, 'INVALID_MESSAGE', 'Message text is empty or too long');
+      return;
+    }
+
+    try {
+      const message = await editMessage(
+        messageId,
+        socket.data.user.id,
+        text.trim(),
+      );
+      io.to(message.roomId).emit('message:updated', message);
+    } catch (err) {
+      handleMessageError(socket, err);
+    }
+  });
+
+  socket.on('message:delete', async ({ messageId }) => {
+    try {
+      const message = await deleteMessage(messageId, socket.data.user.id);
+      io.to(message.roomId).emit('message:updated', message);
+    } catch (err) {
+      handleMessageError(socket, err);
+    }
+  });
+
+  function handleMessageError(socket, err) {
+    const map = {
+      MESSAGE_NOT_FOUND: 'That message no longer exists',
+      NOT_YOUR_MESSAGE: 'You can only edit or delete your own messages',
+      MESSAGE_DELETED: 'That message has already been deleted',
+    };
+
+    emitError(socket, err.message, map[err.message] || 'Something went wrong');
+  }
 }

@@ -27,6 +27,21 @@ export const useChatStore = create((set) => ({
       };
     }),
 
+  updateMessage: (updatedMessage) =>
+    set((state) => {
+      const roomMessages = state.messagesByRoom[updatedMessage.roomId];
+      if (!roomMessages) return state;
+
+      return {
+        messagesByRoom: {
+          ...state.messagesByRoom,
+          [updatedMessage.roomId]: roomMessages.map((msg) =>
+            msg.id === updatedMessage.id ? updatedMessage : msg,
+          ),
+        },
+      };
+    }),
+
   updatePresence: ({ userId, status }) =>
     set((state) => {
       if (status === 'online') {
@@ -48,14 +63,15 @@ export const useChatStore = create((set) => ({
       messagesByRoom: { ...state.messagesByRoom, [roomId]: messages },
     })),
 
-  addRoomMember: (roomId, userId) =>
+  addRoomMember: (roomId, user) =>
     set((state) => {
       const existing = state.membersByRoom[roomId] || [];
-      if (existing.includes(userId)) return state;
+      if (existing.some((m) => m.id === user.id)) return state;
+
       return {
         membersByRoom: {
           ...state.membersByRoom,
-          [roomId]: [...existing, userId],
+          [roomId]: [...existing, user],
         },
       };
     }),
@@ -65,7 +81,7 @@ export const useChatStore = create((set) => ({
       membersByRoom: {
         ...state.membersByRoom,
         [roomId]: (state.membersByRoom[roomId] || []).filter(
-          (id) => id !== userId,
+          (m) => m.id !== userId,
         ),
       },
     })),

@@ -21,7 +21,10 @@ export async function registerRoomHandlers(io, socket) {
     socket.join(roomId);
     socket.data.currentRoom = roomId;
 
-    socket.to(roomId).emit('room:userJoined', { roomId, userId: user.id });
+    socket.to(roomId).emit('room:userJoined', {
+      roomId,
+      user: { id: socket.data.user.id, username: socket.data.user.username },
+    });
 
     // send the new joiner the current members of the room
     const members = getRoomMembers(io, roomId);
@@ -49,9 +52,15 @@ export async function registerRoomHandlers(io, socket) {
 }
 
 function getRoomMembers(io, roomId) {
-  const usersId = io.sockets.adapter.rooms.get(roomId);
+  const room = io.sockets.adapter.rooms.get(roomId);
+  if (!room) return [];
 
-  return usersId ? Array.from(usersId) : [];
+  const sockets = io.sockets.sockets;
+
+  return Array.from(room)
+    .map((socketId) => sockets.get(socketId))
+    .filter(Boolean)
+    .map((s) => ({ id: s.data.user.id, username: s.data.user.username }));
 }
 
 async function getAllRoomsWithMemberCount(io) {

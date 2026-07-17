@@ -26,8 +26,7 @@ export function useRooms() {
 
     const handleMembers = ({ roomId, members }) =>
       setRoomMembers(roomId, members);
-    const handleUserJoined = ({ roomId, userId }) =>
-      addRoomMember(roomId, userId);
+    const handleUserJoined = ({ roomId, user }) => addRoomMember(roomId, user);
     const handleUserLeft = ({ roomId, userId }) =>
       removeRoomMember(roomId, userId);
 

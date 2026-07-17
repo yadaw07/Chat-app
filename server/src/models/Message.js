@@ -6,6 +6,8 @@ const messageSchema = new mongoose.Schema(
     text: { type: String, required: true, maxlength: 1000 },
     senderId: { type: String, required: true },
     senderName: { type: String, required: true },
+    isEdited: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

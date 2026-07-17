@@ -8,10 +8,12 @@ function ChatWindow({
   typingUserIds,
   onTyping,
   onStopTyping,
+  onEdit = { onEdit },
+  onDelete = { onDelete },
 }) {
   return (
     <div className='flex flex-col h-screen flex-1'>
-      <MessageList messages={messages} />
+      <MessageList messages={messages} onEdit={onEdit} onDelete={onDelete} />
       <TypingIndicator typingUserIds={typingUserIds} />
       <MessageInput
         onSend={onSend}

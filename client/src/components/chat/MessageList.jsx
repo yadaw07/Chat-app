@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import { useSocket } from '../../context/SocketContext';
 
-const MessageList = ({ messages }) => {
+const MessageList = ({ messages, onEdit, onDelete }) => {
   const { socket } = useSocket();
   const bottomRef = useRef(null);
 
@@ -18,6 +18,8 @@ const MessageList = ({ messages }) => {
           key={message.id}
           message={message}
           isOwnMessage={message.senderId === socket.id}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
 

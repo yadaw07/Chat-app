@@ -15,6 +15,32 @@ export async function getRecentMessages(roomId) {
   return messages.reverse().map(formatMessage);
 }
 
+export async function editMessage(messageId, userId, newText) {
+  const message = await Message.findById(messageId).catch(() => null);
+
+  if (!message) throw new Error('MESSAGE_NOT_FOUND');
+  if (message.senderId !== userId) throw new Error('NOT_YOUR_MESSAGE');
+  if (message.isDeleted) throw new Error('MESSAGE_DELETED');
+
+  message.text = newText;
+  message.isEdited = true;
+  await message.save();
+
+  return formatMessage(message);
+}
+
+export async function deleteMessage(messageId, userId) {
+  const message = await Message.findById(messageId).catch(() => null);
+  if (!message) throw new Error('MESSAGE_NOT_FOUND');
+  if (message.senderId !== userId) throw new Error('NOT_YOUR_MESSAGE');
+
+  message.isDeleted = true;
+  message.text = '';
+  await message.save();
+
+  return formatMessage(message);
+}
+
 function formatMessage(message) {
   return {
     id: message._id.toString(),
@@ -22,6 +48,8 @@ function formatMessage(message) {
     text: message.text,
     senderId: message.senderId,
     senderName: message.senderName,
+    isEdited: message.isEdited,
+    isDeleted: message.isDeleted,
     timestamp: message.createdAt.getTime(),
   };
 }

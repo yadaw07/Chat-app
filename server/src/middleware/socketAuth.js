@@ -1,7 +1,7 @@
 import { verifyToken } from '../services/authService.js';
 import { getUserById } from '../services/userService.js';
 
-export function socketAuthMiddleware(socket, next) {
+export async function socketAuthMiddleware(socket, next) {
   const token = socket.handshake.auth?.token;
 
   if (!token) {
@@ -14,7 +14,7 @@ export function socketAuthMiddleware(socket, next) {
     return next(new Error('Invalid or expired token'));
   }
 
-  const user = getUserById(payload.sub);
+  const user = await getUserById(payload.sub);
 
   if (!user) {
     return next(new Error('User no longer exists'));
