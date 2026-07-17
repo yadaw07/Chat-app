@@ -18,7 +18,7 @@ const EMPTY_TYPING = [];
 
 function ChatPage() {
   const { messages, sendMessage, editMessage, deleteMessage } = useChat();
-  const { rooms, activeRoomId, joinRoom } = useRooms();
+  const { rooms, activeRoomId, joinRoom, createRoom } = useRooms();
   const { notifyTyping, stopTyping } = useTyping(activeRoomId);
 
   usePresence();
@@ -41,6 +41,7 @@ function ChatPage() {
         rooms={rooms}
         activeRoomId={activeRoomId}
         onSelectRoom={joinRoom}
+        onCreateRoom={createRoom}
       />
 
       {activeRoomId ? (

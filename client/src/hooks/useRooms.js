@@ -7,6 +7,8 @@ export function useRooms() {
   const { socket } = useSocket();
 
   const rooms = useChatStore((state) => state.rooms);
+  const addRoom = useChatStore((state) => state.addRoom);
+
   const activeRoomId = useChatStore((state) => state.activeRoomId);
   const setRooms = useChatStore((state) => state.setRooms);
   const setActiveRoom = useChatStore((state) => state.setActiveRoom);
@@ -24,12 +26,14 @@ export function useRooms() {
       socket.emit('room:list');
     };
 
+    const handleRoomCreated = (room) => addRoom(room);
     const handleMembers = ({ roomId, members }) =>
       setRoomMembers(roomId, members);
     const handleUserJoined = ({ roomId, user }) => addRoomMember(roomId, user);
     const handleUserLeft = ({ roomId, userId }) =>
       removeRoomMember(roomId, userId);
 
+    socket.on('room:created', handleRoomCreated);
     socket.on('room:list', handleRoomList);
     socket.on('room:members', handleMembers);
     socket.on('room:userJoined', handleUserJoined);
@@ -37,18 +41,24 @@ export function useRooms() {
 
     socket.on('connect', requestRooms);
 
-    if (socket.connected) {
-      requestRooms();
-    }
+    if (socket.connected) requestRooms();
 
     return () => {
       socket.off('room:list', handleRoomList);
+      socket.off('room:created', handleRoomCreated);
       socket.off('room:members', handleMembers);
       socket.off('room:userJoined', handleUserJoined);
       socket.off('room:userLeft', handleUserLeft);
       socket.off('connect', requestRooms);
     };
-  }, [socket, setRooms, setRoomMembers, addRoomMember, removeRoomMember]);
+  }, [
+    socket,
+    setRooms,
+    addRoom,
+    setRoomMembers,
+    addRoomMember,
+    removeRoomMember,
+  ]);
 
   const joinRoom = (roomId) => {
     if (activeRoomId) {
@@ -57,6 +67,10 @@ export function useRooms() {
 
     socket.emit('room:join', { roomId });
     setActiveRoom(roomId);
+  };
+
+  const createRoom = (name) => {
+    socket.emit('room:create', { name });
   };
 
   return { rooms, activeRoomId, joinRoom };
