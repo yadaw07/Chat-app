@@ -35,7 +35,7 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
 
   return (
     <div
-      className={`max-w-[70%] flex flex-col px-3 py-2 rounded-xl ${
+      className={`group relative max-w-[70%] flex flex-col px-3 py-2 rounded-xl ${
         isOwnMessage
           ? 'self-end bg-indigo-600 text-white'
           : 'self-start bg-gray-200 text-gray-900'
@@ -46,7 +46,6 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
           {message.senderName}
         </span>
       )}
-
       {isEditing ? (
         <div className='flex flex-col gap-1'>
           <input
@@ -68,12 +67,10 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
       ) : (
         <p className='text-sm'>{message.text}</p>
       )}
-
       <span className='text-[10px] opacity-60 self-end'>
         {message.isEdited && 'edited · '}
         {time}
       </span>
-
       {isOwnMessage && !isEditing && (
         <div className='hidden group-hover:flex gap-2 absolute -top-3 right-2 bg-white shadow rounded px-2 py-0.5 text-[10px] text-gray-600'>
           <button
@@ -82,12 +79,15 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
             aria-label='Edit message'
           >
             <img src='/edit.png' alt='' className='w-3.5 h-3.5' />
+            edit
           </button>
           <button
             onClick={() => onDelete(message.id)}
             className='hover:opacity-70 transition-opacity'
+            aria-label='Delete message'
           >
             <img src='/delete.png' alt='' className='w-3.5 h-3.5' />
+            delete
           </button>
         </div>
       )}

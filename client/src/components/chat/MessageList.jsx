@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 import MessageBubble from './MessageBubble';
-import { useSocket } from '../../context/SocketContext';
+import { useAuthStore } from '../../store/authStore';
 
 const MessageList = ({ messages, onEdit, onDelete }) => {
-  const { socket } = useSocket();
+  const currentUserId = useAuthStore((state) => state.user?.id);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const MessageList = ({ messages, onEdit, onDelete }) => {
         <MessageBubble
           key={message.id}
           message={message}
-          isOwnMessage={message.senderId === socket.id}
+          isOwnMessage={message.senderId === currentUserId}
           onEdit={onEdit}
           onDelete={onDelete}
         />

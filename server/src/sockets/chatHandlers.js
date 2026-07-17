@@ -1,7 +1,11 @@
 import { isNonEmptyString, isValidRoomId } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
-import { saveMessage } from '../services/messageService.js';
+import {
+  saveMessage,
+  deleteMessage,
+  editMessage,
+} from '../services/messageService.js';
 
 export function registerChatHandlers(io, socket) {
   socket.on('message:send', async ({ roomId, text }) => {
@@ -52,6 +56,7 @@ export function registerChatHandlers(io, socket) {
       );
       io.to(message.roomId).emit('message:updated', message);
     } catch (err) {
+      console.error('EDIT ERROR:', err);
       handleMessageError(socket, err);
     }
   });
@@ -61,6 +66,7 @@ export function registerChatHandlers(io, socket) {
       const message = await deleteMessage(messageId, socket.data.user.id);
       io.to(message.roomId).emit('message:updated', message);
     } catch (err) {
+      console.error('DELETE ERROR:', err);
       handleMessageError(socket, err);
     }
   });

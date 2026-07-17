@@ -53,6 +53,12 @@ export const useChatStore = create((set) => ({
       };
     }),
 
+  addRoom: (room) =>
+    set((state) => {
+      if (state.rooms.some((r) => r.id === room.id)) return state;
+      return { rooms: [...state.rooms, room] };
+    }),
+
   setRoomMembers: (roomId, members) =>
     set((state) => ({
       membersByRoom: { ...state.membersByRoom, [roomId]: members },

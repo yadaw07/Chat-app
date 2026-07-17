@@ -1,7 +1,11 @@
-import { roomExists, getAllRooms } from '../services/roomService.js';
+import {
+  roomExists,
+  getAllRooms,
+  createRoom,
+} from '../services/roomService.js';
 import { getRecentMessages } from '../services/messageService.js';
 
-import { isValidRoomId } from '../utils/validators.js';
+import { isValidRoomId, isNonEmptyString } from '../utils/validators.js';
 import { emitError } from '../utils/socketError.js';
 
 export async function registerRoomHandlers(io, socket) {
@@ -48,6 +52,29 @@ export async function registerRoomHandlers(io, socket) {
   socket.on('room:list', async () => {
     const rooms = await getAllRoomsWithMemberCount(io);
     socket.emit('room:list', rooms);
+  });
+
+  socket.on('room:create', async ({ name }) => {
+    if (!isNonEmptyString(name, 50)) {
+      emitError(
+        socket,
+        'INVALID_ROOM_NAME',
+        'Room name must be between 1 and 50 characters',
+      );
+      return;
+    }
+
+    try {
+      const room = await createRoom(name.trim());
+      io.emit('room:created', room);
+    } catch (err) {
+      console.error('Failed to create room:', err.message);
+      emitError(
+        socket,
+        'CREATE_FAILED',
+        'Could not create room, please try again',
+      );
+    }
   });
 }
 
