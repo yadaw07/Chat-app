@@ -54,6 +54,7 @@ export function registerChatHandlers(io, socket) {
         socket.data.user.id,
         text.trim(),
       );
+
       io.to(message.roomId).emit('message:updated', message);
     } catch (err) {
       console.error('EDIT ERROR:', err);
@@ -64,6 +65,7 @@ export function registerChatHandlers(io, socket) {
   socket.on('message:delete', async ({ messageId }) => {
     try {
       const message = await deleteMessage(messageId, socket.data.user.id);
+
       io.to(message.roomId).emit('message:updated', message);
     } catch (err) {
       console.error('DELETE ERROR:', err);

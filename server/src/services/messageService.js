@@ -35,7 +35,7 @@ export async function deleteMessage(messageId, userId) {
   if (message.senderId !== userId) throw new Error('NOT_YOUR_MESSAGE');
 
   message.isDeleted = true;
-  message.text = '';
+  // message.text = '';
   await message.save();
 
   return formatMessage(message);
@@ -45,7 +45,7 @@ function formatMessage(message) {
   return {
     id: message._id.toString(),
     roomId: message.roomId,
-    text: message.text,
+    text: message.isDeleted ? '': message.text,
     senderId: message.senderId,
     senderName: message.senderName,
     isEdited: message.isEdited,
