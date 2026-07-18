@@ -1,35 +1,33 @@
-import express from 'express';
-
-const app = express();
-
 import http from 'http';
 import { Server } from 'socket.io';
-import cors from 'cors';
 
-app.use(cors());
+import { registerSocketHandlers } from './src/sockets/index.js';
+import { CLIENT_URL, PORT } from './src/config/env.js';
 
-const server = http.createServer(app);
+import { socketAuthMiddleware } from './src/middleware/socketAuth.js';
+import app from './src/app.js';
 
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-  },
-});
+import { connectDB } from './src/config/db.js';
+import { seedDefaultRooms } from './src/services/roomService.js';
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
+async function startServer() {
+  await connectDB();
+  await seedDefaultRooms();
 
-  socket.on('sendChatMsg', (data) => {
-    io.to(data.room).emit('sendToAll', data);
-    // console.log(data);
+  const httpServer = http.createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: CLIENT_URL,
+      methods: ['GET', 'POST'],
+    },
   });
 
-  socket.on('joinRoom', (room) => {
-    socket.join(room);
-  });
-});
+  io.use(socketAuthMiddleware);
+  registerSocketHandlers(io);
 
-server.listen(5000, () => {
-  console.log('Server running on port 5000');
-});
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+startServer();
