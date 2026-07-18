@@ -45,6 +45,7 @@ function ChatPage() {
         onCreateRoom={createRoom}
         onEditRoom={editRoom}
         onDeleteRoom={deleteRoom}
+        onLogout={clearAuth}
       />
 
       {activeRoomId ? (
@@ -70,7 +71,6 @@ function ChatPage() {
           Select a room to start chatting
         </div>
       )}
-      <button onClick={clearAuth}>Log out</button>
 
       <ErrorToast error={error} onClear={clearError} />
     </div>
