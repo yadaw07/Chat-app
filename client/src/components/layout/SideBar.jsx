@@ -3,7 +3,7 @@ import { useState } from 'react';
 import RoomList from '../rooms/RoomList';
 import CreateRoomModal from '../rooms/CreateRoomModal';
 
-function Sidebar({
+function SideBar({
   rooms,
   activeRoomId,
   onSelectRoom,
@@ -49,4 +49,4 @@ function Sidebar({
   );
 }
 
-export default Sidebar;
+export default SideBar;
