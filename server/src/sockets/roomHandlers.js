@@ -67,7 +67,7 @@ export async function registerRoomHandlers(io, socket) {
     }
 
     try {
-      const room = await createRoom(name.trim());
+      const room = await createRoom(name.trim(), socket.data.user.id);
       io.emit('room:created', room);
     } catch (err) {
       console.error('Failed to create room:', err.message);

@@ -6,10 +6,10 @@ import { useChatStore } from '../store/chatStore';
 export function useRooms() {
   const { socket } = useSocket();
 
+  const updateRoom = useChatStore((state) => state.updateRoom);
+  const removeRoom = useChatStore((state) => state.removeRoom);
   const rooms = useChatStore((state) => state.rooms);
   const addRoom = useChatStore((state) => state.addRoom);
-  const handleRoomUpdated = (room) => updateRoom(room);
-  const handleRoomDeleted = ({ roomId }) => removeRoom(roomId);
 
   const activeRoomId = useChatStore((state) => state.activeRoomId);
   const setRooms = useChatStore((state) => state.setRooms);
@@ -28,6 +28,8 @@ export function useRooms() {
       socket.emit('room:list');
     };
 
+    const handleRoomUpdated = (room) => updateRoom(room);
+    const handleRoomDeleted = ({ roomId }) => removeRoom(roomId);
     const handleRoomCreated = (room) => addRoom(room);
     const handleMembers = ({ roomId, members }) =>
       setRoomMembers(roomId, members);

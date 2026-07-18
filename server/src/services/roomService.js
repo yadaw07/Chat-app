@@ -10,8 +10,6 @@ export async function createRoom(name, createdBy) {
   const id = await generateUniqueSlug(name);
   const room = await Room.create({ id, name, createdBy });
 
-  console.log('roomId', id);
-
   return formatRoom(room);
 }
 

@@ -16,8 +16,6 @@ const CreateRoomModal = ({ isOpen, onClose, onCreate }) => {
     onClose();
   };
 
-  console.log('onCreate', onCreate);
-
   return (
     <div className='fixed inset-0 bg-black/30 flex items-center justify-center z-50'>
       <form

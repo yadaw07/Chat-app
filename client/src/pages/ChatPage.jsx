@@ -18,7 +18,8 @@ const EMPTY_TYPING = [];
 
 function ChatPage() {
   const { messages, sendMessage, editMessage, deleteMessage } = useChat();
-  const { rooms, activeRoomId, joinRoom, createRoom } = useRooms();
+  const { rooms, activeRoomId, joinRoom, createRoom, deleteRoom, editRoom } =
+    useRooms();
   const { notifyTyping, stopTyping } = useTyping(activeRoomId);
 
   usePresence();

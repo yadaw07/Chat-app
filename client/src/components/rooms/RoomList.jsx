@@ -28,6 +28,7 @@ const RoomList = ({
       {rooms.map((room) => {
         const isOwner = room.createdBy === currentUserId;
         const isEditing = editingId === room.id;
+
         return (
           <li key={room.id} className='group flex items-center gap-1'>
             {isEditing ? (

@@ -3,7 +3,14 @@ import { useState } from 'react';
 import RoomList from '../rooms/RoomList';
 import CreateRoomModal from '../rooms/CreateRoomModal';
 
-function Sidebar({ rooms, activeRoomId, onSelectRoom, onCreateRoom }) {
+function Sidebar({
+  rooms,
+  activeRoomId,
+  onSelectRoom,
+  onCreateRoom,
+  onEditRoom,
+  onDeleteRoom,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
