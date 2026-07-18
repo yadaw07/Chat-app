@@ -11,9 +11,12 @@ const CreateRoomModal = ({ isOpen, onClose, onCreate }) => {
     if (!trimmed) return;
 
     onCreate(trimmed);
+
     setName('');
     onClose();
   };
+
+  console.log('onCreate', onCreate);
 
   return (
     <div className='fixed inset-0 bg-black/30 flex items-center justify-center z-50'>

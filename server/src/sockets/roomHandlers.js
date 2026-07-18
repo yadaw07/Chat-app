@@ -2,6 +2,8 @@ import {
   roomExists,
   getAllRooms,
   createRoom,
+  updateRoom,
+  deleteRoom,
 } from '../services/roomService.js';
 import { getRecentMessages } from '../services/messageService.js';
 
@@ -76,6 +78,44 @@ export async function registerRoomHandlers(io, socket) {
       );
     }
   });
+
+  socket.on('room:update', async ({ roomId, name }) => {
+    if (!isValidRoomId(roomId) || !isNonEmptyString(name, 50)) {
+      emitError(
+        socket,
+        'INVALID_ROOM_NAME',
+        'Room name must be between 1 and 50 characters',
+      );
+      return;
+    }
+
+    try {
+      const room = await updateRoom(roomId, socket.data.user.id, name.trim());
+      io.emit('room:updated', room);
+    } catch (err) {
+      handleRoomError(socket, err);
+    }
+  });
+
+  socket.on('room:delete', async ({ roomId }) => {
+    if (!isValidRoomId(roomId)) return;
+
+    try {
+      await deleteRoom(roomId, socket.data.user.id);
+      io.socketsLeave(roomId); // force everyone currently in it out
+      io.emit('room:deleted', { roomId });
+    } catch (err) {
+      handleRoomError(socket, err);
+    }
+  });
+}
+
+function handleRoomError(socket, err) {
+  const map = {
+    ROOM_NOT_FOUND: 'That room no longer exists',
+    NOT_ROOM_OWNER: 'You can only edit or delete rooms you created',
+  };
+  emitError(socket, err.message, map[err.message] || 'Something went wrong');
 }
 
 function getRoomMembers(io, roomId) {

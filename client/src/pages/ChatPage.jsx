@@ -42,6 +42,8 @@ function ChatPage() {
         activeRoomId={activeRoomId}
         onSelectRoom={joinRoom}
         onCreateRoom={createRoom}
+        onEditRoom={editRoom}
+        onDeleteRoom={deleteRoom}
       />
 
       {activeRoomId ? (

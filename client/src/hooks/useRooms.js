@@ -8,6 +8,8 @@ export function useRooms() {
 
   const rooms = useChatStore((state) => state.rooms);
   const addRoom = useChatStore((state) => state.addRoom);
+  const handleRoomUpdated = (room) => updateRoom(room);
+  const handleRoomDeleted = ({ roomId }) => removeRoom(roomId);
 
   const activeRoomId = useChatStore((state) => state.activeRoomId);
   const setRooms = useChatStore((state) => state.setRooms);
@@ -38,6 +40,8 @@ export function useRooms() {
     socket.on('room:members', handleMembers);
     socket.on('room:userJoined', handleUserJoined);
     socket.on('room:userLeft', handleUserLeft);
+    socket.on('room:updated', handleRoomUpdated);
+    socket.on('room:deleted', handleRoomDeleted);
 
     socket.on('connect', requestRooms);
 
@@ -49,6 +53,8 @@ export function useRooms() {
       socket.off('room:members', handleMembers);
       socket.off('room:userJoined', handleUserJoined);
       socket.off('room:userLeft', handleUserLeft);
+      socket.off('room:updated', handleRoomUpdated);
+      socket.off('room:deleted', handleRoomDeleted);
       socket.off('connect', requestRooms);
     };
   }, [
@@ -56,6 +62,8 @@ export function useRooms() {
     setRooms,
     addRoom,
     setRoomMembers,
+    addRoomMember,
+    removeRoomMember,
     addRoomMember,
     removeRoomMember,
   ]);
@@ -73,5 +81,20 @@ export function useRooms() {
     socket.emit('room:create', { name });
   };
 
-  return { rooms, activeRoomId, joinRoom };
+  const editRoom = (roomId, name) => {
+    socket.emit('room:update', { roomId, name });
+  };
+
+  const deleteRoomAction = (roomId) => {
+    socket.emit('room:delete', { roomId });
+  };
+
+  return {
+    rooms,
+    activeRoomId,
+    joinRoom,
+    createRoom,
+    editRoom,
+    deleteRoom: deleteRoomAction,
+  };
 }

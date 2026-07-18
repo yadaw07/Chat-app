@@ -22,6 +22,8 @@ function Sidebar({ rooms, activeRoomId, onSelectRoom, onCreateRoom }) {
         rooms={rooms}
         activeRoomId={activeRoomId}
         onSelectRoom={onSelectRoom}
+        onEditRoom={onEditRoom}
+        onDeleteRoom={onDeleteRoom}
       />
 
       <CreateRoomModal

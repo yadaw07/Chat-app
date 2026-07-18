@@ -79,7 +79,6 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
             aria-label='Edit message'
           >
             <img src='/edit.png' alt='' className='w-3.5 h-3.5' />
-            edit
           </button>
           <button
             onClick={() => onDelete(message.id)}
@@ -87,7 +86,6 @@ const MessageBubble = ({ message, isOwnMessage, onEdit, onDelete }) => {
             aria-label='Delete message'
           >
             <img src='/delete.png' alt='' className='w-3.5 h-3.5' />
-            delete
           </button>
         </div>
       )}

@@ -59,6 +59,23 @@ export const useChatStore = create((set) => ({
       return { rooms: [...state.rooms, room] };
     }),
 
+  updateRoom: (room) =>
+    set((state) => ({
+      rooms: state.rooms.map((r) => (r.id === room.id ? room : r)),
+    })),
+
+  removeRoom: (roomId) =>
+    set((state) => {
+      const { [roomId]: _, ...restMessages } = state.messagesByRoom;
+      const { [roomId]: __, ...restMembers } = state.membersByRoom;
+      return {
+        rooms: state.rooms.filter((r) => r.id !== roomId),
+        messagesByRoom: restMessages,
+        membersByRoom: restMembers,
+        activeRoomId: state.activeRoomId === roomId ? null : state.activeRoomId,
+      };
+    }),
+
   setRoomMembers: (roomId, members) =>
     set((state) => ({
       membersByRoom: { ...state.membersByRoom, [roomId]: members },
