@@ -7,7 +7,7 @@ import { EMPTY_MEMBERS, useChatStore } from '../store/chatStore';
 import { useAuthStore } from '../store/authStore';
 
 import ChatWindow from '../components/chat/ChatWindow';
-import Sidebar from '../components/layout/Sidebar';
+import SideBar from '../components/layout/SideBar';
 import UserList from '../components/users/UserList';
 
 import { useSocketErrors } from '../hooks/useSocketErrors';
@@ -38,7 +38,7 @@ function ChatPage() {
 
   return (
     <div className='flex'>
-      <Sidebar
+      <SideBar
         rooms={rooms}
         activeRoomId={activeRoomId}
         onSelectRoom={joinRoom}
